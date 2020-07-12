@@ -30,12 +30,7 @@ extern DAC_HandleTypeDef hdac;
 
 extern ADC_HandleTypeDef hadc1;
 extern ADC_HandleTypeDef hadc2;
-//extern ADC_HandleTypeDef hadc3;
-//extern ADC_HandleTypeDef hadc8;
-//extern ADC_HandleTypeDef hadc7;
-//extern ADC_HandleTypeDef hadc6;
-//extern ADC_HandleTypeDef hadc5;
-//extern ADC_HandleTypeDef hadc4;
+extern ADC_HandleTypeDef hadc3;
 
 extern TIM_HandleTypeDef htim6;  // Timer for realtime clock.
 

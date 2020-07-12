@@ -57,7 +57,7 @@ float adsr_slopeTime(float voltage) {
    // Logarithmic response, so that;
    // -10V = 1 microsecond, 0V = 1 millisecond, +10V = 1 second
    // TODO:
-   float millis = pow10(voltage / 3.33333);
+   float millis = powf(10, voltage / 3.33333f);
    return millis * 1000;
 }
 
