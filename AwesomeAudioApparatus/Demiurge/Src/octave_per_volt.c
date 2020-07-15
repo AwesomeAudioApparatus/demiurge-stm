@@ -20,11 +20,11 @@ See the License for the specific language governing permissions and
 #include "octave_per_volt.h"
 
 float octave_frequency_of(float voltage) {
-   HAL_GPIO_TogglePin(TP2_GPIO_Port, TP2_Pin );
    if( voltage > 10 || voltage < -10 )
    {
       return 400;
    }
+   HAL_GPIO_TogglePin(TP2_GPIO_Port, TP2_Pin );
    float result = 27.5f * pow2(voltage);
    HAL_GPIO_TogglePin(TP2_GPIO_Port, TP2_Pin );
    return result;
