@@ -30,7 +30,6 @@ extern DAC_HandleTypeDef hdac;
 
 extern ADC_HandleTypeDef hadc1;
 extern ADC_HandleTypeDef hadc2;
-extern ADC_HandleTypeDef hadc3;
 
 extern TIM_HandleTypeDef htim6;  // Timer for realtime clock.
 
@@ -64,8 +63,8 @@ static void wait_timer() {
    bool atleast_once = false;
    uint32_t passed;
    while (1) {
-      volatile uint32_t current = htim6.Instance->CNT;
-      passed = current - (uint32_t) timer_counter;
+      volatile uint16_t current = htim6.Instance->CNT;
+      passed = current - (uint16_t) timer_counter;
       if (passed >= micros_per_tick) {
          break;
       }
@@ -186,7 +185,7 @@ static void read_adc() {
 
 void demiurge_tick() {
    wait_timer();
-   HAL_GPIO_WritePin(TP1_GPIO_Port, TP1_Pin,GPIO_PIN_RESET ); // TP1 - Test Point to check timing
+   HAL_GPIO_WritePin(TP1_GPIO_Port, TP1_Pin,GPIO_PIN_SET ); // TP1 - Test Point to check timing
 
    timer_counter = demiurge_current_time();
 #ifdef DEMIURGE_TICK_TIMING
@@ -213,18 +212,28 @@ void demiurge_tick() {
    HAL_GPIO_WritePin(TP1_GPIO_Port, TP1_Pin,GPIO_PIN_RESET );
 }
 
-static void demiurge_initialize() {
-   logI(TAG, "Starting Demiurge...\n");
-
+void demiurge_start(uint64_t rate) {
+   micros_per_tick = 1000000 / rate;
+   logI(TAG, "Starting Demiurge. Tick rate: %d microseconds\n", micros_per_tick);
+   sample_rate = rate;
+   
    for (int i = 0; i < DEMIURGE_MAX_SINKS; i++)
       sinks[i] = NULL;
-   logI(TAG, "Initialized GPIO done");
-}
-
-void demiurge_start(uint64_t rate) {
-   sample_rate = rate;
-   demiurge_initialize();
+   
+   HAL_ADC_Start(&hadc1);
+   HAL_ADC_Start(&hadc2);
+   HAL_DAC_Start(&hdac, DAC_CHANNEL_1);
+   HAL_DAC_Start(&hdac, DAC_CHANNEL_2);
+   HAL_TIM_Base_Start(&htim6);    // start TIMER6
    logI(TAG, "Demiurge Started.");
 }
-
+void demiurge_stop(uint64_t rate) {
+   for (int i = 0; i < DEMIURGE_MAX_SINKS; i++)
+      sinks[i] = NULL;
+   HAL_ADC_Stop(&hadc1);
+   HAL_ADC_Stop(&hadc2);
+   HAL_DAC_Stop(&hdac, DAC_CHANNEL_1);
+   HAL_DAC_Stop(&hdac, DAC_CHANNEL_2);
+   HAL_TIM_Base_Stop(&htim6);    // start TIMER6
+}
 #undef TAG

@@ -14,8 +14,7 @@ See the License for the specific language governing permissions and
       limitations under the License.
 */
 
-#include <stdlib.h>
-#include <arm_math.h>
+#include <main.h>
 #include "clipping.h"
 #include "demiurge.h"
 #include "demi_asserts.h"
@@ -74,7 +73,7 @@ void oscillator_configure_trig(oscillator_t *handle, signal_t *control) {
    handle->trigger = control;
 }
 
-static uint32_t angular_delta(const oscillator_t *osc, uint64_t time_in_us) {
+static float angular_delta(const oscillator_t *osc, uint64_t time_in_us) {
    signal_t *freqControl = osc->frequency;
    float freq = 440;
    if (freqControl) {
@@ -87,7 +86,9 @@ static uint32_t angular_delta(const oscillator_t *osc, uint64_t time_in_us) {
 #else
    }
 #endif
-   return freq / demiurge_sample_rate();
+   float samples_per_second = (float) demiurge_sample_rate();
+   float progression = freq / samples_per_second;
+   return progression;
 }
 
 static float scale(oscillator_t *osc, uint64_t time_in_us) {
@@ -102,11 +103,11 @@ float oscillator_saw(signal_t *handle, uint64_t time_in_us) {
    if (time_in_us > handle->last_calc) {
       handle->last_calc = time_in_us;
       oscillator_t *osc = (oscillator_t *) handle->data;
-      uint32_t delta = angular_delta(osc, time_in_us);
-      uint64_t x = osc->angular_pos + delta;
-      if( x > 1.0 )
-         x = 0;
-      float out = (float) x * osc->scale;
+      float delta = angular_delta(osc, time_in_us);
+      float x = osc->angular_pos + delta;
+      if( x > 1.0f )
+         x = 0.0f;
+      float out = x * osc->scale;
       out = handle->post_fn(out);
       osc->angular_pos = x;
 #ifdef DEMIURGE_DEV
@@ -127,10 +128,10 @@ float oscillator_sine(signal_t *handle, uint64_t time_in_us) {
    if (time_in_us > handle->last_calc) {
       handle->last_calc = time_in_us;
       oscillator_t *osc = (oscillator_t *) handle->data;
-      uint32_t delta = angular_delta(osc, time_in_us);
-      uint64_t x = osc->angular_pos + delta;
-      if( x > 1.0 )
-         x = 0;
+      float delta = angular_delta(osc, time_in_us);
+      float x = osc->angular_pos + delta;
+      if( x > 1.0f )
+         x = 0.0f;
       float out = arm_sin_f32( M_TWOPI * x ) * osc->scale;
       out = handle->post_fn(out);
       osc->angular_pos = x;
@@ -149,11 +150,11 @@ float oscillator_square(signal_t *handle, uint64_t time_in_us) {
    if (time_in_us > handle->last_calc) {
       handle->last_calc = time_in_us;
       oscillator_t *osc = (oscillator_t *) handle->data;
-      uint32_t delta = angular_delta(osc, time_in_us);
-      uint64_t x = osc->angular_pos + delta;
-      if( x > 1.0 )
-         x = 0;
-      float out = (float) (x > 0.5) * osc->scale;
+      float delta = angular_delta(osc, time_in_us);
+      float x = osc->angular_pos + delta;
+      if( x > 1.0f )
+         x = 0.0f;
+      float out = (x > 0.5f) * osc->scale;
       out = handle->post_fn(out);
       osc->angular_pos = x;
 #ifdef DEMIURGE_DEV

@@ -19,7 +19,10 @@ See the License for the specific language governing permissions and
 
 #include <stddef.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include <stdbool.h>
+#include <stm32f405xx.h>
+#include <arm_math.h>
 
 // All signals uses float for representation.
 // Audio = -10.0 to 10.0

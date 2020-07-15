@@ -58,6 +58,7 @@ uint64_t demiurge_current_time();
 uint32_t demiurge_sample_rate();
 
 void demiurge_start(uint64_t sample_rate);
+void demiurge_stop();
 
 void demiurge_tick();
 

@@ -16,15 +16,18 @@ See the License for the specific language governing permissions and
 
 
 #include <stdint.h>
+#include <main.h>
 #include "octave_per_volt.h"
 
 float octave_frequency_of(float voltage) {
-   // TODO: power of 2 can be optimized on 'float' by adding 1 to exponent.
+   HAL_GPIO_TogglePin(TP2_GPIO_Port, TP2_Pin );
    if( voltage > 10 || voltage < -10 )
    {
       return 400;
    }
-   return 27.5 * pow2(voltage);
+   float result = 27.5f * pow2(voltage);
+   HAL_GPIO_TogglePin(TP2_GPIO_Port, TP2_Pin );
+   return result;
 }
 
 float octave_voltage_of(float frequency) {
