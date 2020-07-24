@@ -58,6 +58,7 @@ extern uint32_t micros_per_tick;
 extern uint64_t demiurge_current_time;
 extern float outputs[2];
 extern float inputs[8];
+extern float leds[4];
 
 void demiurge_start(uint64_t sample_rate);
 
@@ -70,6 +71,8 @@ void demiurge_registerSink(signal_t *processor);
 void demiurge_unregisterSink(signal_t *processor);
 
 void demiurge_set_output(int number, float value);
+
+void demiurge_set_led(int number, float value);
 
 bool demiurge_gpio(int i);
 

@@ -48,6 +48,7 @@ static volatile uint64_t tick_interval = 0;
 static volatile signal_t *sinks[DEMIURGE_MAX_SINKS];
 float inputs[8] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
 float outputs[2] = {0.0f, 0.0f};
+float leds[4] = {0.0f, 0.0f};
 
 
 // Overrun increments means that the tick() took longer than the sample time.
@@ -113,6 +114,11 @@ void demiurge_set_output(int number, float value) {
    outputs[number - 1] = value;
 }
 
+void demiurge_set_led(int number, float value) {
+   configASSERT(number > 0 && number <= 4)
+   leds[number - 1] = value;
+}
+
 void demiurge_print_overview(const char *tag, signal_t *signal) {
 #ifdef DEMIURGE_TICK_TIMING
    logI("TICK", "interval=%lld, duration=%lld, start=%lld, overrun=%d",
@@ -172,6 +178,10 @@ static inline void update_dac() {
    hdac.Instance->DHR12R2 = ch2;
 }
 
+static inline void update_leds() {
+   // TODO:
+}
+
 static inline void read_adc() {
    inputs[0] = ((float) hadc1.Instance->DR) / 204.8f;
    inputs[1] = ((float) hadc2.Instance->DR) / 204.8f;
@@ -187,6 +197,7 @@ void demiurge_tick() {
 #endif
    // We are setting the outputs at the start of a cycle, to ensure that the interval is identical from cycle to cycle.
    update_dac();
+   update_leds();
    readGpio();
    read_adc();
 

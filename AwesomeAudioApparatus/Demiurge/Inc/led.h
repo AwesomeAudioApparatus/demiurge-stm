@@ -24,17 +24,12 @@ See the License for the specific language governing permissions and
 typedef struct {
    int position;
    bool registered;
-//   ledc_channel_t channel;
    signal_t me;
    signal_t *input;
-   signal_t *fade;
-   signal_t *dutycycle;
 } led_t;
 
 void led_init(led_t *handle, int position);
 void led_configure_input(led_t *handle, signal_t *input);
-void led_configure_fade(led_t *handle, signal_t *fade);
-void led_configure_duty(led_t *handle, signal_t *duty);
 float led_read(signal_t *handle, uint64_t time);
 
 #endif

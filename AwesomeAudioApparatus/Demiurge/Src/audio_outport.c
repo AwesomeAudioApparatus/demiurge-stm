@@ -23,7 +23,7 @@ void audio_outport_init(audio_outport_t *handle, int position) {
    handle->me.read_fn = audio_outport_read;
    handle->me.data = handle;
    handle->me.post_fn = clip_audio;
-   handle->position = position;
+   handle->position = position - 1;
    handle->registered = false;
 }
 
@@ -47,7 +47,7 @@ float audio_outport_read(signal_t *handle, uint64_t time) {
       handle->extra1 = raw;
       handle->extra2 = result;
 #endif
-      demiurge_set_output(port->position, result);
+      outputs[port->position] = result;
       return 0.0f;
    }
    return 0.0f;
