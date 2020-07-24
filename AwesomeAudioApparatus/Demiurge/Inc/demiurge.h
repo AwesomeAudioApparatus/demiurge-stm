@@ -53,11 +53,14 @@ See the License for the specific language governing permissions and
 #define DEMIURGE_MAX_SINKS 6
 #endif
 
-uint64_t demiurge_current_time();
-
-uint32_t demiurge_sample_rate();
+extern uint32_t demiurge_sample_rate;
+extern uint32_t micros_per_tick;
+extern uint64_t demiurge_current_time;
+extern float outputs[2];
+extern float inputs[8];
 
 void demiurge_start(uint64_t sample_rate);
+
 void demiurge_stop();
 
 void demiurge_tick();
@@ -65,10 +68,6 @@ void demiurge_tick();
 void demiurge_registerSink(signal_t *processor);
 
 void demiurge_unregisterSink(signal_t *processor);
-
-float demiurge_input(int number);
-
-float demiurge_output(int number);
 
 void demiurge_set_output(int number, float value);
 

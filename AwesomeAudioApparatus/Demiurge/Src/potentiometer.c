@@ -23,7 +23,7 @@ void potentiometer_init(potentiometer_t *handle, int position) {
    handle->me.read_fn = potentiometer_read;
    handle->me.data = handle;
    handle->me.post_fn = clip_none;
-   handle->position = position + DEMIURGE_POTENTIOMETER_OFFSET;
+   handle->position = position + DEMIURGE_POTENTIOMETER_OFFSET - 1;
 #ifdef DEMIURGE_DEV
    handle->me.extra8 = handle->position;
 #endif
@@ -33,7 +33,10 @@ float potentiometer_read(signal_t *signal, uint64_t time) {
    if (time > signal->last_calc) {
       signal->last_calc = time;
       potentiometer_t *handle = (potentiometer_t *) signal->data;
-      float in = demiurge_input(handle->position);
+#ifdef DEMIURGE_DEV
+      configASSERT(handle->position > 0 && handle->position <= 8)
+#endif
+      float in = inputs[handle->position];
 #ifdef DEMIURGE_DEV
       signal->extra1 = in;
       signal->extra2 = handle->position;

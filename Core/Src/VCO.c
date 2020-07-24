@@ -37,7 +37,6 @@ float offset10( float value ) {
  * Simple VCO with sine wave on both outputs.
  */
 void vco_setup() {
-   demiurge_start(48000);
    control_pair_init(&pair1, 1);
    control_pair_init(&pair2, 2);
    offset_init(&offset_freq);
@@ -46,8 +45,9 @@ void vco_setup() {
 
    control_pair_init(&pair3, 3);
    oscillator_init(&oscillator);
+   oscillator_configure_mode(&oscillator, TRIANGLE);
    oscillator_configure_frequency(&oscillator, &offset_freq.me);
-//   oscillator_configure_amplitude(&oscillator, &pair3.me);
+   oscillator_configure_attentuation(&oscillator, &pair3.me);
    audio_outport_init(&out1, 1);
    audio_outport_init(&out2, 2);
    audio_outport_configure_input(&out1, &oscillator.me);

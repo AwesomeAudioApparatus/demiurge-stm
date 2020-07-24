@@ -21,21 +21,24 @@ typedef enum  { SINE, SQUARE, TRIANGLE, SAW } oscillator_mode;
 
 #include "signal.h"
 
+#ifndef SINEWAVE_SAMPLES
+#define SINEWAVE_SAMPLES 1800
+#endif
+
 typedef struct {
-   uint64_t lastTrig;
    signal_t me;
    signal_t *frequency;
-   signal_t *amplitude;
+   signal_t *attentuation;
    signal_t *trigger;
    float angular_change_per_tick;
-   float scale;
    float angular_pos;
+   bool lastTrig;
 } oscillator_t;
 
 void oscillator_init(oscillator_t *handle);
-void oscillator_configure(oscillator_t *handle, signal_t *freqControl, signal_t *amplitudeControl, signal_t *trigControl);
+void oscillator_configure(oscillator_t *handle, signal_t *freqCtrl, signal_t *amplitudeControl, signal_t *trigCtrl);
 void oscillator_configure_frequency(oscillator_t *handle, signal_t *control);
-void oscillator_configure_amplitude(oscillator_t *handle, signal_t *control);
+void oscillator_configure_attentuation(oscillator_t *handle, signal_t *control);
 void oscillator_configure_trig(oscillator_t *handle, signal_t *control);
 void oscillator_configure_mode(oscillator_t *handle, oscillator_mode mode);
 

@@ -19,14 +19,15 @@ See the License for the specific language governing permissions and
 #include "demiurge.h"
 
 void gate_inport_init(gate_inport_t *handle, int position) {
-   configASSERT(position >= 0 && position <= 4 )
+   configASSERT(position >= 0 && position <= 4)
    handle->me.read_fn = gate_inport_read;
    handle->me.data = handle;
    handle->me.post_fn = clip_gate;
+   handle->position = position - 1;
 }
 
-float gate_inport_read(signal_t *handle, uint64_t time){
-   if( time > handle->last_calc ) {
+float gate_inport_read(signal_t *handle, uint64_t time) {
+   if (time > handle->last_calc) {
       handle->last_calc = time;
       gate_inport_t *port = (gate_inport_t *) handle->data;
 #ifdef DEMIURGE_DEV
@@ -34,11 +35,10 @@ float gate_inport_read(signal_t *handle, uint64_t time){
 #endif
       // if position == 0, then use digital input, otherwise use analog inputs.
       float result;
-      if( port->position ) {
-         float input = demiurge_input(port->position);
+      if (port->position) {
+         float input = inputs[port->position];
          result = handle->post_fn(input);
-      }
-      else {
+      } else {
          bool state = demiurge_gpio(32);
          result = state ? DEMIURGE_GATE_HIGH : DEMIURGE_GATE_LOW;
       }

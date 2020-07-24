@@ -31,11 +31,12 @@ extern DAC_HandleTypeDef hdac;
 extern ADC_HandleTypeDef hadc1;
 extern ADC_HandleTypeDef hadc2;
 
-extern TIM_HandleTypeDef htim6;  // Timer for realtime clock.
+extern TIM_HandleTypeDef htim7;  // Timer for realtime clock.
 
-static uint32_t sample_rate;
-static uint32_t micros_per_tick;
-static uint64_t timer_counter = 0;
+uint32_t demiurge_sample_rate;
+uint64_t demiurge_current_time;
+uint32_t micros_per_tick;
+static uint32_t last_time;
 
 #ifdef DEMIURGE_TICK_TIMING
 static uint32_t tick_update = 0;
@@ -54,26 +55,23 @@ float outputs[2] = {0.0f, 0.0f};
 // evaluation to take less time.
 static uint32_t overrun = -3;  // 3 overruns happen during startup, and that is ok. Let's compensate for that.
 
-uint64_t demiurge_current_time() {
-   return timer_counter;
-}
-
-static void wait_timer() {
-   // htim6 must be set to tick at microseconds.
-   bool atleast_once = false;
-   uint32_t passed;
-   while (1) {
-      volatile uint16_t current = htim6.Instance->CNT;
-      passed = current - (uint16_t) timer_counter;
-      if (passed >= micros_per_tick) {
-         break;
-      }
-      atleast_once = true;
-   }
-   if (!atleast_once)
-      overrun++;
-   timer_counter += passed;
-}
+//static void wait_timer() {
+//   // htim6 must be set to tick at microseconds.
+//   bool atleast_once = false;
+//   uint32_t passed;
+//   while (1) {
+//      volatile uint16_t current = htim6.Instance->CNT;
+//      passed = current - (uint16_t) demiurge_current_time;
+//      if (passed >= micros_per_tick) {
+//         break;
+//      }
+//      atleast_once = true;
+//   }
+//   if (!atleast_once) {
+//      overrun++;
+//   }
+//   demiurge_current_time += passed;
+//}
 
 void demiurge_registerSink(signal_t *processor) {
    logI(TAG, "Registering Sink: %p", (void *) processor);
@@ -99,7 +97,6 @@ void demiurge_unregisterSink(signal_t *processor) {
    }
 }
 
-
 bool demiurge_gpio(int pin) {
    uint32_t gpios = 0;
    if (pin >= 0 && pin < 16)
@@ -115,29 +112,36 @@ void demiurge_set_output(int number, float value) {
    configASSERT(number > 0 && number <= 2)
    outputs[number - 1] = value;
 }
-uint32_t demiurge_sample_rate()
-{
-   return sample_rate;
-}
+
 void demiurge_print_overview(const char *tag, signal_t *signal) {
 #ifdef DEMIURGE_TICK_TIMING
    logI("TICK", "interval=%lld, duration=%lld, start=%lld, overrun=%d",
             tick_interval, tick_duration, tick_start, overrun);
 #endif  //DEMIURGE_TICK_TIMING
 
+   configASSERT(6 > 0 && 6 <= 8)
+   configASSERT(8 > 0 && 8 <= 8)
+   configASSERT(7 > 0 && 7 <= 8)
+   configASSERT(1 > 0 && 1 <= 8)
+   configASSERT(2 > 0 && 2 <= 8)
+   configASSERT(5 > 0 && 5 <= 8)
+   configASSERT(3 > 0 && 3 <= 8)
+   configASSERT(4 > 0 && 4 <= 8)
    logI(tag, "Input: %2.1f, %2.1f, %2.1f, %2.1f, %2.1f, %2.1f, %2.1f, %2.1f",
-        demiurge_input(1),
-        demiurge_input(2),
-        demiurge_input(3),
-        demiurge_input(4),
-        demiurge_input(5),
-        demiurge_input(6),
-        demiurge_input(7),
-        demiurge_input(8)
+        inputs[0],
+        inputs[1],
+        inputs[2],
+        inputs[3],
+        inputs[4],
+        inputs[5],
+        inputs[6],
+        inputs[7]
    );
+   configASSERT(1 > 0 && 1 <= DEMIURGE_MAX_SINKS)
+   configASSERT(2 > 0 && 2 <= DEMIURGE_MAX_SINKS)
    logI(tag, "Output: %2.1f, %2.1f",
-        demiurge_output(1),
-        demiurge_output(2)
+        outputs[0],
+        outputs[1]
    );
 #ifdef DEMIURGE_DEV
    logI(tag, "Extras: [%lld] : %2.1f - %2.1f, %2.1f, %2.1f, %2.1f, %2.1f, %2.1f, %2.1f, %2.1f",
@@ -155,39 +159,28 @@ void demiurge_print_overview(const char *tag, signal_t *signal) {
 #endif // DEMIURGE_DEV
 }
 
-float demiurge_input(int number) {
-   configASSERT(number > 0 && number <= 8)
-   return inputs[number - 1];
-}
-
-float demiurge_output(int number) {
-   configASSERT(number > 0 && number <= DEMIURGE_MAX_SINKS)
-   return outputs[number - 1];
-}
-
-static void readGpio() {
+static inline void readGpio() {
    gpio_a = GPIOA->IDR;
    gpio_b = GPIOB->IDR;
    gpio_c = GPIOC->IDR;
 }
 
-static void update_dac() {
-   uint16_t ch1 = (uint16_t) ((10.0f - outputs[0]) * 204.8f);
-   uint16_t ch2 = (uint16_t) ((10.0f - outputs[1]) * 204.8f);
+static inline void update_dac() {
+   uint16_t ch1 = (uint16_t) ((10.0f - outputs[0]) * 204.7f);
+   uint16_t ch2 = (uint16_t) ((10.0f - outputs[1]) * 204.7f);
    hdac.Instance->DHR12R1 = ch1;
    hdac.Instance->DHR12R2 = ch2;
 }
 
-static void read_adc() {
+static inline void read_adc() {
    inputs[0] = ((float) hadc1.Instance->DR) / 204.8f;
    inputs[1] = ((float) hadc2.Instance->DR) / 204.8f;
 }
 
 void demiurge_tick() {
-   wait_timer();
-   HAL_GPIO_WritePin(TP1_GPIO_Port, TP1_Pin,GPIO_PIN_SET ); // TP1 - Test Point to check timing
-
-   timer_counter = demiurge_current_time();
+//   wait_timer();
+   HAL_GPIO_WritePin(TP1_GPIO_Port, TP1_Pin,GPIO_PIN_SET );
+   demiurge_current_time+= micros_per_tick;
 #ifdef DEMIURGE_TICK_TIMING
    tick_interval = timer_counter - tick_start;
    tick_start = timer_counter;
@@ -196,10 +189,11 @@ void demiurge_tick() {
    update_dac();
    readGpio();
    read_adc();
+
    for (int i = 0; i < DEMIURGE_MAX_SINKS; i++) {
       signal_t *sink = sinks[i];
       if (sink != NULL) {
-         sink->read_fn(sink, timer_counter);  // ignore return value
+         sink->read_fn(sink, demiurge_current_time);  // ignore return value
       }
    }
 #ifdef DEMIURGE_TICK_TIMING
@@ -213,20 +207,22 @@ void demiurge_tick() {
 }
 
 void demiurge_start(uint64_t rate) {
+   octave_init();
    micros_per_tick = 1000000 / rate;
    logI(TAG, "Starting Demiurge. Tick rate: %d microseconds\n", micros_per_tick);
-   sample_rate = rate;
-   
+   demiurge_sample_rate = rate;
+
    for (int i = 0; i < DEMIURGE_MAX_SINKS; i++)
       sinks[i] = NULL;
-   
+
    HAL_ADC_Start(&hadc1);
    HAL_ADC_Start(&hadc2);
    HAL_DAC_Start(&hdac, DAC_CHANNEL_1);
    HAL_DAC_Start(&hdac, DAC_CHANNEL_2);
-   HAL_TIM_Base_Start(&htim6);    // start TIMER6
+   HAL_TIM_Base_Start_IT(&htim7);    // start TIMER7
    logI(TAG, "Demiurge Started.");
 }
+
 void demiurge_stop(uint64_t rate) {
    for (int i = 0; i < DEMIURGE_MAX_SINKS; i++)
       sinks[i] = NULL;
@@ -234,6 +230,12 @@ void demiurge_stop(uint64_t rate) {
    HAL_ADC_Stop(&hadc2);
    HAL_DAC_Stop(&hdac, DAC_CHANNEL_1);
    HAL_DAC_Stop(&hdac, DAC_CHANNEL_2);
-   HAL_TIM_Base_Stop(&htim6);    // start TIMER6
+   HAL_TIM_Base_Stop(&htim7);    // start TIMER7
+}
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
+   HAL_GPIO_WritePin(TP1_GPIO_Port, TP1_Pin, GPIO_PIN_SET);
+   __HAL_TIM_CLEAR_IT(&htim7, TIM_IT_UPDATE);
+   demiurge_tick();
+   HAL_GPIO_WritePin(TP1_GPIO_Port, TP1_Pin, GPIO_PIN_RESET);
 }
 #undef TAG

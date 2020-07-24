@@ -31,11 +31,10 @@ typedef struct {
    };
 } float_raw;
 
+void octave_init();
+
 float octave_frequency_of(float voltage);
 
 float octave_voltage_of(float frequency);
 
-inline float pow2(float voltage) {
-   return pow(2, voltage);
-}
 #endif

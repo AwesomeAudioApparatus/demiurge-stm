@@ -24,14 +24,14 @@ void audio_inport_init(audio_inport_t *handle, int position) {
    handle->me.read_fn = audio_inport_read;
    handle->me.data = handle;
    handle->me.post_fn = clip_audio;
-   handle->position = position;
+   handle->position = position - 1;
 }
 
 float audio_inport_read(signal_t *handle, uint64_t time) {
    audio_inport_t *port = (audio_inport_t *) handle->data;
    if (time > handle->last_calc) {
       handle->last_calc = time;
-      float result = handle->post_fn(demiurge_input(port->position));
+      float result = handle->post_fn(inputs[port->position]);
       handle->cached = result;
       return result;
    }

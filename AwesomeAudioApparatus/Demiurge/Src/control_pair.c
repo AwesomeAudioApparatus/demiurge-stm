@@ -25,8 +25,6 @@ void control_pair_init(control_pair_t *handle, int position) {
    handle->me.post_fn = clip_cv;
    potentiometer_init(&handle->potentiometer, position);
    cv_inport_init(&handle->cv, position);
-   handle->potentiometer_scale = 1.0;
-   handle->cv_scale = 1.0;
 }
 
 float control_pair_read(signal_t *handle, uint64_t time) {
@@ -35,13 +33,11 @@ float control_pair_read(signal_t *handle, uint64_t time) {
       handle->last_calc = time;
 
       signal_t *pot = &control->potentiometer.me;
-      float pot_scale = control->potentiometer_scale;
-      float pot_in = pot->read_fn(pot, time) * pot_scale;
+      float pot_in = pot->read_fn(pot, time);
 
       signal_t *cv = &control->cv.me;
-      float cv_scale = control->cv_scale;
-      float cv_in = cv->read_fn(cv, time) * cv_scale;
-      float result = handle->post_fn((pot_in + cv_in) / 2);
+      float cv_in = cv->read_fn(cv, time);
+      float result = handle->post_fn((pot_in + cv_in) / 2.0f);
       handle->cached = result;
       return result;
    }

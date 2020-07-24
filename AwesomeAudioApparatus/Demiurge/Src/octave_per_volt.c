@@ -19,15 +19,32 @@ See the License for the specific language governing permissions and
 #include <main.h>
 #include "octave_per_volt.h"
 
+#ifndef OCTAVE_LOOKUP_SIZE
+#define OCTAVE_LOOKUP_SIZE 4096
+#endif
+
+static float octave_freq[OCTAVE_LOOKUP_SIZE];
+static float octave_step;
+
+void octave_init()
+{
+   octave_step = 20.0f / OCTAVE_LOOKUP_SIZE;
+   float volt = 0;
+   for( int i=0 ; i < OCTAVE_LOOKUP_SIZE; i++ )
+   {
+      octave_freq[i] =  27.5f * pow(2, volt);
+      volt = volt + octave_step;
+   }
+}
+
 float octave_frequency_of(float voltage) {
-   if( voltage > 10 || voltage < -10 )
+   if( voltage > 10 || voltage < 0 )
    {
       return 400;
    }
-   HAL_GPIO_TogglePin(TP2_GPIO_Port, TP2_Pin );
-   float result = 27.5f * pow2(voltage);
-   HAL_GPIO_TogglePin(TP2_GPIO_Port, TP2_Pin );
-   return result;
+//   float result = 27.5f * pow(2, voltage);
+   int pos = voltage / octave_step;
+   return octave_freq[pos];
 }
 
 float octave_voltage_of(float frequency) {

@@ -21,19 +21,19 @@ float clip_none(float value) {
 }
 
 float clip_gate(float value) {
-   if (value >= 0.5) return 10.0;
-   return -10.0;
+   if (value >= 0.5f) return 10.0f;
+   return -10.0f;
 }
 
 float clip_cv(float value) {
-   if (value >= 10.0) return 10.0;
-   if (value <= -10.0) return -10.0;
+   if (value >= 10.0f) return 10.0f;
+   if (value <= -10.0f) return -10.0f;
    return value;
 }
 
 float clip_audio(float value) {
-   if (value >= 10.0) return 10.0;
-   if (value <= -10.0) return -10.0;
+   if (value >= 10.0f) return 10.0f;
+   if (value <= -10.0f) return -10.0f;
    return value;
 }
 

@@ -48,8 +48,8 @@ float audio_outport_read(signal_t *handle, uint64_t time) {
       handle->extra2 = result;
 #endif
       demiurge_set_output(port->position, result);
-      return 0.0;
+      return 0.0f;
    }
-   return 0.0;
+   return 0.0f;
 }
 

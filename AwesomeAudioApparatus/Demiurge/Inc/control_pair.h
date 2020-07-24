@@ -22,8 +22,6 @@ See the License for the specific language governing permissions and
 #include "signal.h"
 
 typedef struct {
-   float cv_scale;
-   float potentiometer_scale;
    signal_t me;
    cv_inport_t cv;
    potentiometer_t potentiometer;

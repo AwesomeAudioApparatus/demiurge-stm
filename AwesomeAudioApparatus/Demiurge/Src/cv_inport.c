@@ -23,17 +23,18 @@ void cv_inport_init(cv_inport_t *handle, int position){
    configASSERT(position > 0 && position <= 4)
    handle->me.read_fn = cv_inport_read;
    handle->me.data = handle;
-   handle->me.post_fn = clip_cv;
-   handle->position = position + DEMIURGE_CVINPUT_OFFSET;
+   handle->me.post_fn = clip_none;
+   handle->position = position + DEMIURGE_CVINPUT_OFFSET - 1;
 }
 
 float cv_inport_read(signal_t *handle, uint64_t time) {
    cv_inport_t *cv = (cv_inport_t *) handle->data;
    if (time > handle->last_calc) {
       handle->last_calc = time;
-      float input = handle->post_fn(demiurge_input(cv->position));
-      handle->cached = input;
-      return input;
+      float in = inputs[cv->position];
+      float result = handle->post_fn(in);
+      handle->cached = result;
+      return result;
    }
    return handle->cached;
 }
