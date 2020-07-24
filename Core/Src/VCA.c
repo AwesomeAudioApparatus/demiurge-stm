@@ -38,6 +38,8 @@ void setup() {
    audio_inport_init(&in2, 4);         // Audio In on fourth input from the top
    audio_outport_init(&out1, 1);       // Audio Out on left output channel
    audio_outport_init(&out2, 2);       // Audio Out on right output channel
+
+   // Initialize Mixer with 2 channels.
    mixer_init(&mixer, 2);
 
    // Connect in1 on mixer channel 1, with pair1 as the volume control

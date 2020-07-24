@@ -30,27 +30,37 @@ audio_outport_t out2;
 
 oscillator_t oscillator;
 
-float offset10( float value ) {
+float offset10(float value) {
    return value + 10;
 }
+
 /*
- * Simple VCO with sine wave on both outputs.
+ * Simple VCO with triangle wave on both outputs.
  */
 void vco_setup() {
-   control_pair_init(&pair1, 1);
-   control_pair_init(&pair2, 2);
-   offset_init(&offset_freq);
-   offset_configure_input(&offset_freq, &pair1.me);
-   offset_configure_control(&offset_freq, &pair2.me);
+   // Initialize the hardware configuration
+   control_pair_init(&pair1, 1);     // FREQUENCY = CV+Pot at the top
+   control_pair_init(&pair2, 2);     // FREQ TUNING = CV+Pot at the second position from the top
+   control_pair_init(&pair3, 3);     // AMPLITUDE = CV+Pot at the second position from the top
+   audio_outport_init(&out1, 1);     // Audio Out on left output channel
+   audio_outport_init(&out2, 2);     // Audio Out on right output channel
 
-   control_pair_init(&pair3, 3);
-   oscillator_init(&oscillator);
+   // Initialize internal blocks
+   offset_init(&offset_freq);                // FREQ TUNING needs to adjust offset
+   oscillator_init(&oscillator);             // Initialize the oscillator
+
+   offset_configure_input(&offset_freq, &pair1.me);   // Top Pot+CV is the changing frequency
+   offset_configure_control(&offset_freq, &pair2.me); // Second Pot+CV is the tuning of that frequency.
+
+   // Set up the Oscillator to TRIANGLE wave form
    oscillator_configure_mode(&oscillator, TRIANGLE);
-   oscillator_configure_frequency(&oscillator, &offset_freq.me);
-   oscillator_configure_attentuation(&oscillator, &pair3.me);
-   audio_outport_init(&out1, 1);
-   audio_outport_init(&out2, 2);
+   oscillator_configure_frequency(&oscillator, &offset_freq.me);     // offset_freq block is controlling the frequency
+   oscillator_configure_attentuation(&oscillator, &pair3.me);        // pair3 block is controlling the amplitude
+
+   // Connect Oscillator to out1
    audio_outport_configure_input(&out1, &oscillator.me);
+
+   // Connect Oscillator to out2
    audio_outport_configure_input(&out2, &oscillator.me);
 }
 
