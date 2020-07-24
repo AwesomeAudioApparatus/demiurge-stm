@@ -31,17 +31,26 @@ mixer_t mixer;
  * A two port Mixer, with CV control
  */
 void setup() {
+   // Initialize the hardware configuration
+   control_pair_init(&pair1, 1);       // CV+Pot at the top of Demiurge
+   control_pair_init(&pair2, 2);       // CV+Pot at the second position from the top of Demiurge
+   audio_inport_init(&in1, 3);         // Audio In on third input from the top
+   audio_inport_init(&in2, 4);         // Audio In on fourth input from the top
+   audio_outport_init(&out1, 1);       // Audio Out on left output channel
+   audio_outport_init(&out2, 2);       // Audio Out on right output channel
    mixer_init(&mixer, 2);
-   control_pair_init(&pair1, 1);
-   control_pair_init(&pair2, 2);
-   audio_inport_init(&in1, 3);
-   audio_inport_init(&in2, 4);
+
+   // Connect in1 on mixer channel 1, with pair1 as the volume control
    mixer_configure_input(&mixer, 1, &in1.me, &pair1.me);
+
+   // Connect in2 on mixer channel 2, with pair2 as the volume control
    mixer_configure_input(&mixer, 2, &in2.me, &pair2.me);
 
-   audio_outport_init(&out1, 1);
-   audio_outport_init(&out2, 2);
+   // Connect mixer output to out1
    audio_outport_configure_input(&out1, &mixer.me);
+
+   // Connect mixer output to out2
+   audio_outport_configure_input(&out2, &mixer.me);
 }
 
 void loop() {
