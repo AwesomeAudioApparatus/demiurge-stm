@@ -24,15 +24,15 @@ See the License for the specific language governing permissions and
 #endif
 
 static float octave_freq[OCTAVE_LOOKUP_SIZE];
-static float octave_step;
+static double octave_step;
 
 void octave_init()
 {
    octave_step = 20.0f / OCTAVE_LOOKUP_SIZE;
-   float volt = 0;
+   double volt = 0;
    for( int i=0 ; i < OCTAVE_LOOKUP_SIZE; i++ )
    {
-      octave_freq[i] =  27.5f * pow(2, volt);
+      octave_freq[i] =  (float) (27.5 * pow(2.0, volt));
       volt = volt + octave_step;
    }
 }

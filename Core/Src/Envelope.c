@@ -16,17 +16,17 @@ See the License for the specific language governing permissions and
 
 #include "demiurge.h"
 
-control_pair_t attack;
-control_pair_t decay;
-control_pair_t sustain;
-control_pair_t release;
+static control_pair_t attack;
+static control_pair_t decay;
+static control_pair_t sustain;
+static control_pair_t release;
 
-adsr_t adsr;
-gate_inport_t gate;
-inverter_t invert;
+static adsr_t adsr;
+static gate_inport_t gate;
+static inverter_t invert;
 
-cv_outport_t out1;
-cv_outport_t out2;
+static cv_outport_t out1;
+static cv_outport_t out2;
 
 /*
  * Envelope generator.

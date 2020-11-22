@@ -50,7 +50,7 @@ include_directories(Middlewares/ST/ARM/DSP/Inc Drivers/CMSIS/Include Drivers/STM
 
 add_definitions(-DSTM32F405xx -DUSE_HAL_DRIVER -DARM_MATH_CM4 -DDEBUG)
 
-file(GLOB_RECURSE SOURCES "Packs/*.*" "Library/*.*" "Core/*.*" "Middlewares/*.*" "AwesomeAudioApparatus/*.*" "Drivers/*.*")
+file(GLOB_RECURSE SOURCES "Library/*.*" "Core/*.*" "Middlewares/*.*" "AwesomeAudioApparatus/*.*" "Drivers/*.*")
 
 set(LINKER_SCRIPT ${CMAKE_SOURCE_DIR}/STM32F405RGTX_FLASH.ld)
 

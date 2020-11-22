@@ -33,7 +33,7 @@ extern ADC_HandleTypeDef hadc2;
 
 extern TIM_HandleTypeDef htim7;  // Timer for realtime clock.
 
-uint32_t demiurge_sample_rate;
+uint32_t demiurge_samplerate;
 uint64_t demiurge_current_time;
 uint32_t micros_per_tick;
 static uint32_t last_time;
@@ -55,24 +55,6 @@ float leds[4] = {0.0f, 0.0f};
 // If you see this happening, either decrease the sample rate or optimize the tick()
 // evaluation to take less time.
 static uint32_t overrun = -3;  // 3 overruns happen during startup, and that is ok. Let's compensate for that.
-
-//static void wait_timer() {
-//   // htim6 must be set to tick at microseconds.
-//   bool atleast_once = false;
-//   uint32_t passed;
-//   while (1) {
-//      volatile uint16_t current = htim6.Instance->CNT;
-//      passed = current - (uint16_t) demiurge_current_time;
-//      if (passed >= micros_per_tick) {
-//         break;
-//      }
-//      atleast_once = true;
-//   }
-//   if (!atleast_once) {
-//      overrun++;
-//   }
-//   demiurge_current_time += passed;
-//}
 
 void demiurge_registerSink(signal_t *processor) {
    logI(TAG, "Registering Sink: %p", (void *) processor);
@@ -188,8 +170,6 @@ static inline void read_adc() {
 }
 
 void demiurge_tick() {
-//   wait_timer();
-   HAL_GPIO_WritePin(TP1_GPIO_Port, TP1_Pin,GPIO_PIN_SET );
    demiurge_current_time+= micros_per_tick;
 #ifdef DEMIURGE_TICK_TIMING
    tick_interval = timer_counter - tick_start;
@@ -214,14 +194,12 @@ void demiurge_tick() {
    }
    tick_update++;
 #endif
-   HAL_GPIO_WritePin(TP1_GPIO_Port, TP1_Pin,GPIO_PIN_RESET );
 }
 
-void demiurge_start(uint64_t rate) {
+void demiurge_start() {
    octave_init();
-   micros_per_tick = 1000000 / rate;
+   micros_per_tick = 1000000 / demiurge_samplerate;
    logI(TAG, "Starting Demiurge. Tick rate: %d microseconds\n", micros_per_tick);
-   demiurge_sample_rate = rate;
 
    for (int i = 0; i < DEMIURGE_MAX_SINKS; i++)
       sinks[i] = NULL;
@@ -244,9 +222,9 @@ void demiurge_stop(uint64_t rate) {
    HAL_TIM_Base_Stop(&htim7);    // start TIMER7
 }
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
-   HAL_GPIO_WritePin(TP1_GPIO_Port, TP1_Pin, GPIO_PIN_SET);
+   HAL_GPIO_WritePin(TP2_GPIO_Port, TP2_Pin, GPIO_PIN_SET);
    __HAL_TIM_CLEAR_IT(&htim7, TIM_IT_UPDATE);
    demiurge_tick();
-   HAL_GPIO_WritePin(TP1_GPIO_Port, TP1_Pin, GPIO_PIN_RESET);
+   HAL_GPIO_WritePin(TP2_GPIO_Port, TP2_Pin, GPIO_PIN_RESET);
 }
 #undef TAG

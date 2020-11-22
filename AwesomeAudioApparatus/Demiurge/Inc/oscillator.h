@@ -22,7 +22,7 @@ typedef enum  { SINE, SQUARE, TRIANGLE, SAW } oscillator_mode;
 #include "signal.h"
 
 #ifndef SINEWAVE_SAMPLES
-#define SINEWAVE_SAMPLES 1800
+#define SINEWAVE_SAMPLES 3600
 #endif
 
 typedef struct {

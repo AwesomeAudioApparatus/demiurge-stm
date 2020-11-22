@@ -27,7 +27,7 @@ void oscillator_init(oscillator_t *handle) {
    if (!sine_wave_initialized) {
       sine_wave = (float *) calloc(SINEWAVE_SAMPLES, sizeof(float));
       for (int i = 0; i < SINEWAVE_SAMPLES; i++) {
-         double radians = ((double) i / SINEWAVE_SAMPLES) * M_TWOPI;
+         double radians = M_TWOPI * ((double) i) / ((double) SINEWAVE_SAMPLES);
          sine_wave[i] = arm_sin_f32(radians);
       }
       sine_wave_initialized = true;
@@ -109,9 +109,9 @@ static inline float angular_pos(oscillator_t *osc, uint64_t time_in_us) {
 #else
    }
 #endif
-   float delta = freq / (float) demiurge_sample_rate;
+   float delta = freq / (float) demiurge_samplerate;
    float x = osc->angular_pos + delta;
-   if (x > 1.0f)
+   if (x >= 1.0f)
       x = 0.0f;
    osc->angular_pos = x;
    return x;

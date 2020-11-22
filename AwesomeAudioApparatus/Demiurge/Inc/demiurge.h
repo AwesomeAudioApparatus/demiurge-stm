@@ -53,7 +53,6 @@ See the License for the specific language governing permissions and
 #define DEMIURGE_MAX_SINKS 6
 #endif
 
-extern uint32_t demiurge_sample_rate;
 extern uint32_t micros_per_tick;
 extern uint64_t demiurge_current_time;
 extern float outputs[2];

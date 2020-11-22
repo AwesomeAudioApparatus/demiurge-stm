@@ -16,16 +16,16 @@ See the License for the specific language governing permissions and
 
 #include "demiurge.h"
 
-audio_inport_t in1;
-audio_inport_t in2;
+static audio_inport_t in1;
+static audio_inport_t in2;
 
-control_pair_t pair1;
-control_pair_t pair2;
+static control_pair_t pair1;
+static control_pair_t pair2;
 
-audio_outport_t out1;
-audio_outport_t out2;
+static audio_outport_t out1;
+static audio_outport_t out2;
 
-mixer_t mixer;
+static mixer_t mixer;
 
 /*
  * A two port Mixer, with CV control

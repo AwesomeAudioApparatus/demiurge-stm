@@ -17,6 +17,11 @@ See the License for the specific language governing permissions and
 #ifndef DEMIURGE_CLIPPING_H
 #define DEMIURGE_CLIPPING_H
 
+#ifndef DEFAULT_SAMPLE_RATE
+#define DEFAULT_SAMPLE_RATE 48000
+#endif
+extern uint32_t demiurge_samplerate;
+
 float clip_none(float);
 
 float clip_gate(float value);

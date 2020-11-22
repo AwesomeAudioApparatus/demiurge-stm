@@ -64,6 +64,7 @@ void Error_Handler(void);
 #define TP2_GPIO_Port GPIOC
 /* USER CODE BEGIN Private defines */
 
+
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus
