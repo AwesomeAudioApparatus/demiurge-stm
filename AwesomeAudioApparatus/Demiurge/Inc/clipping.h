@@ -14,12 +14,15 @@ See the License for the specific language governing permissions and
       limitations under the License.
 */
 
-#ifndef DEMIURGE_CLIPPING_H
-#define DEMIURGE_CLIPPING_H
+#include <stdint.h>
+
+#ifndef _DEMIURGE_CLIPPING_H
+#define _DEMIURGE_CLIPPING_H
 
 #ifndef DEFAULT_SAMPLE_RATE
 #define DEFAULT_SAMPLE_RATE 48000
 #endif
+
 extern uint32_t demiurge_samplerate;
 
 float clip_none(float);
@@ -30,5 +33,4 @@ float clip_cv(float value);
 
 float clip_audio(float value);
 
-
-#endif //DEMIURGE_CLIPPING_H
+#endif

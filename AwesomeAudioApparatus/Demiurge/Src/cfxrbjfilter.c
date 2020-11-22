@@ -14,14 +14,12 @@ See the License for the specific language governing permissions and
       limitations under the License.
 */
 
-#include <cfxrbjfilter.h>
 #include "cfxrbjfilter.h"
-#include "demiurge.h"
 
 // TODO: Work in-progress. Function check and testing are not done.
 
 void cfxrbjfilter_init(cfxrbjfilter_t *handle, int position) {
-    configASSERT(position > 0 && position <= 4)
+//    configASSERT(position > 0 && position <= 4)
     handle->me.read_fn = cfxrbjfilter_read;
     handle->me.data = handle;
     handle->me.post_fn = clip_none;

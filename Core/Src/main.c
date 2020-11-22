@@ -381,7 +381,7 @@ static void MX_TIM7_Init(void)
 
   /* USER CODE BEGIN TIM7_Init 1 */
   uint32_t prescale = 0;
-  uint32_t period = (84000000 / samplerate) - 1;
+  uint32_t period = (84000000 / demiurge_samplerate) - 1;
 
   /* USER CODE END TIM7_Init 1 */
   htim7.Instance = TIM7;

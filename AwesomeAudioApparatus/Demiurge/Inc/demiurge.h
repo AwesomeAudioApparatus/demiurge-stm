@@ -59,7 +59,7 @@ extern float outputs[2];
 extern float inputs[8];
 extern float leds[4];
 
-void demiurge_start(uint64_t sample_rate);
+void demiurge_start();
 
 void demiurge_stop();
 

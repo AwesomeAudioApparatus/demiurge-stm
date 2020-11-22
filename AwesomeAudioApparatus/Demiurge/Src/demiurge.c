@@ -36,7 +36,6 @@ extern TIM_HandleTypeDef htim7;  // Timer for realtime clock.
 uint32_t demiurge_samplerate;
 uint64_t demiurge_current_time;
 uint32_t micros_per_tick;
-static uint32_t last_time;
 
 #ifdef DEMIURGE_TICK_TIMING
 static uint32_t tick_update = 0;

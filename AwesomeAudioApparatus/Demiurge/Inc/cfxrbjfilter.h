@@ -17,7 +17,6 @@ See the License for the specific language governing permissions and
 #ifndef _DEMIURGE_cfxrbjfilter_H_
 #define _DEMIURGE_cfxrbjfilter_H_
 
-
 #include "signal.h"
 
 typedef struct {
@@ -71,5 +70,5 @@ void cfxrbjfilter_configure_type(cfxrbjfilter_t *handle, signal_t *input);
 float cfxrbjfilter_read(signal_t *handle, uint64_t time);
 
 void computeCoefficients(cfxrbjfilter_t *filter, uint64_t type, const double frequency, const double q,
-                         const double db_gain, bool q_is_bandwidth)
+                         const double db_gain, bool q_is_bandwidth);
 #endif
