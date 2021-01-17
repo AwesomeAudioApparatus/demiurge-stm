@@ -36,14 +36,14 @@ void oscillator_init(oscillator_t *handle) {
    handle->me.data = handle;
    handle->me.post_fn = clip_none;
    handle->frequency = NULL;
-   handle->attentuation = NULL;
+   handle->amplitude = NULL;
    handle->trigger = NULL;
    handle->lastTrig = 0;
 }
 
-void oscillator_configure(oscillator_t *handle, signal_t *freqCtrl, signal_t *attentuationCtrl, signal_t *trigCtrl) {
+void oscillator_configure(oscillator_t *handle, signal_t *freqCtrl, signal_t *amplitudeCtrl, signal_t *trigCtrl) {
    oscillator_configure_frequency(handle, freqCtrl);
-   oscillator_configure_attentuation(handle, attentuationCtrl);
+   oscillator_configure_amplitude(handle, amplitudeCtrl);
    oscillator_configure_trig(handle, trigCtrl);
 }
 
@@ -71,9 +71,9 @@ void oscillator_configure_frequency(oscillator_t *handle, signal_t *control) {
    handle->frequency = control;
 }
 
-void oscillator_configure_attentuation(oscillator_t *handle, signal_t *control) {
+void oscillator_configure_amplitude(oscillator_t *handle, signal_t *control) {
    configASSERT(control != NULL)
-   handle->attentuation = control;
+   handle->amplitude = control;
 }
 
 void oscillator_configure_trig(oscillator_t *handle, signal_t *control) {
@@ -117,16 +117,16 @@ static inline float angular_pos(oscillator_t *osc, uint64_t time_in_us) {
    return x;
 }
 
-// TODO: Should attentuation really be linear?? log2? log10?
-static inline float attentuation(oscillator_t *osc, uint64_t time_in_us) {
-   signal_t *attenuationControl = osc->attentuation;
-   float attentuation = 1.0f;
-   if (attenuationControl) {
-      float voltage = attenuationControl->read_fn(attenuationControl, time_in_us);
+// TODO: Should amplitude really be linear?? log2? log10?
+static inline float amplitude(oscillator_t *osc, uint64_t time_in_us) {
+   signal_t *amplitudeControl = osc->amplitude;
+   float amplitude = 1.0f;
+   if (amplitudeControl) {
+      float voltage = amplitudeControl->read_fn(amplitudeControl, time_in_us);
       // TODO: This is temporary, since current set up doesn't have pot+cv inputs
-      attentuation = (10 - voltage) / 10.0f;
+      amplitude = (10 - voltage) / 10.0f;
       // should probably be
-//      attentuation = voltage / 10.0f;
+//      amplitude = voltage / 10.0f;
 #ifdef DEMIURGE_DEV
       handle->extra6 = voltage;
    }
@@ -134,7 +134,7 @@ static inline float attentuation(oscillator_t *osc, uint64_t time_in_us) {
 #else
    }
 #endif
-   return attentuation;
+   return amplitude;
 }
 
 float oscillator_saw(signal_t *handle, uint64_t time_in_us) {
@@ -142,7 +142,7 @@ float oscillator_saw(signal_t *handle, uint64_t time_in_us) {
       handle->last_calc = time_in_us;
       oscillator_t *osc = (oscillator_t *) handle->data;
       float x = angular_pos(osc, time_in_us);
-      float out = (x * 20.0f - 10.0f) * attentuation(osc, time_in_us);
+      float out = (x * 20.0f - 10.0f) * amplitude(osc, time_in_us);
       out = handle->post_fn(out);
 #ifdef DEMIURGE_DEV
       handle->extra1 = out;
@@ -166,7 +166,7 @@ float oscillator_triangle(signal_t *handle, uint64_t time_in_us) {
       } else {
          out = x * 40.0f - 10.0f;
       }
-      out = handle->post_fn(out * attentuation(osc, time_in_us));
+      out = handle->post_fn(out * amplitude(osc, time_in_us));
 #ifdef DEMIURGE_DEV
       handle->extra1 = out;
       handle->extra2 = x;
@@ -183,7 +183,7 @@ float oscillator_sine(signal_t *handle, uint64_t time_in_us) {
       handle->last_calc = time_in_us;
       oscillator_t *osc = (oscillator_t *) handle->data;
       float x = angular_pos(osc, time_in_us);
-      float out = arm_sin_f32(M_TWOPI * x) * 10 * attentuation(osc, time_in_us);
+      float out = arm_sin_f32(M_TWOPI * x) * 10 * amplitude(osc, time_in_us);
       // Optimized
 //      int idx = (int) (x * SINEWAVE_SAMPLES);
 //      float out;
@@ -213,7 +213,7 @@ float oscillator_square(signal_t *handle, uint64_t time_in_us) {
          out = 10.0f;
       else
          out = -10.0f;
-      out = handle->post_fn(out * attentuation(osc, time_in_us));
+      out = handle->post_fn(out * amplitude(osc, time_in_us));
 #ifdef DEMIURGE_DEV
       handle->extra1 = out;
       handle->extra2 = x;

@@ -28,7 +28,7 @@ typedef enum  { SINE, SQUARE, TRIANGLE, SAW } oscillator_mode;
 typedef struct {
    signal_t me;
    signal_t *frequency;
-   signal_t *attentuation;
+   signal_t *amplitude;
    signal_t *trigger;
    float angular_change_per_tick;
    float angular_pos;
@@ -38,7 +38,7 @@ typedef struct {
 void oscillator_init(oscillator_t *handle);
 void oscillator_configure(oscillator_t *handle, signal_t *freqCtrl, signal_t *amplitudeControl, signal_t *trigCtrl);
 void oscillator_configure_frequency(oscillator_t *handle, signal_t *control);
-void oscillator_configure_attentuation(oscillator_t *handle, signal_t *control);
+void oscillator_configure_amplitude(oscillator_t *handle, signal_t *control);
 void oscillator_configure_trig(oscillator_t *handle, signal_t *control);
 void oscillator_configure_mode(oscillator_t *handle, oscillator_mode mode);
 
