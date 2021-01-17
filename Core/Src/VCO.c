@@ -19,24 +19,14 @@ See the License for the specific language governing permissions and
 #define TAG "VCO"
 
 static control_pair_t pair1;  // frequency
-
 static control_pair_t pair2;  // frequency offset
+static control_pair_t pair3;  // amplitude
 static offset_t offset_freq;
-
-static control_pair_t pair3;
-
 static audio_outport_t out1;
 static audio_outport_t out2;
-
 static oscillator_t oscillator;
 
-float offset10(float value) {
-   return value + 10;
-}
-
-/*
- * Simple VCO with triangle wave on both outputs.
- */
+/* Simple VCO with triangle wave on both outputs. */
 void vco_setup() {
    // Initialize the hardware configuration
    control_pair_init(&pair1, 1);     // FREQUENCY = CV+Pot at the top
@@ -53,14 +43,12 @@ void vco_setup() {
    offset_configure_control(&offset_freq, &pair2.me); // Second Pot+CV is the tuning of that frequency.
 
    // Set up the Oscillator to TRIANGLE wave form
-   oscillator_configure_mode(&oscillator, SINE);
-   //oscillator_configure_frequency(&oscillator, &offset_freq.me);     // offset_freq block is controlling the frequency
-   //oscillator_configure_attentuation(&oscillator, &pair3.me);        // pair3 block is controlling the amplitude
+   oscillator_configure_mode(&oscillator, TRIANGLE);
+   oscillator_configure_frequency(&oscillator, &offset_freq.me);     // offset_freq block is controlling the frequency
+   oscillator_configure_attentuation(&oscillator, &pair3.me);        // pair3 block is controlling the amplitude
 
-   // Connect Oscillator to out1
+   // Connect Oscillator to outputs
    audio_outport_configure_input(&out1, &oscillator.me);
-
-   // Connect Oscillator to out2
    audio_outport_configure_input(&out2, &oscillator.me);
 }
 
