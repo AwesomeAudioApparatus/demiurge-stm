@@ -76,3 +76,16 @@ a Demiurge project for the STM32CubeMX and optionally the STM32CubeIDE.
       loop();
 ```
 
+# Audience
+This documentation is intended for C programmers that want to create new
+Eurorack Modules with the Demiurge Hardware Platform, which can be purchased
+at a low cost at https://awesomeaudioapparatus.com, either as a kit or
+fully assembled (without frontpanel, which can be ordered separately in
+case volume production is intended)
+
+# Continued Reading
+   * [Installation](docs/installation.md)
+   * [Usage](docs/usage.md)
+   * [Blocks](docs/blocks.md)
+   * [Functions](docs/functions.md)
+   * [Examples](docs/examples.md)

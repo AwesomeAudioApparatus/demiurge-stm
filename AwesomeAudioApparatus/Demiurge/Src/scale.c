@@ -22,7 +22,7 @@ void scale_init(scale_t *handle) {
    handle->me.read_fn = scale_read;
    handle->me.data = handle;
    handle->me.post_fn = clip_none;
-   handle->scale = 1.0;
+   handle->scale = 1.0f;
    handle->scale_control = NULL;
 }
 
