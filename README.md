@@ -1,4 +1,4 @@
-= Demiure Sound Processing Engine
+# Demiure Sound Processing Engine
 
 The Demiurge Sound Process Engine (DSPE) is a zero-latency, streaming digital 
 sound, processing platform that handles the real-time aspect of the Demiurge
@@ -10,7 +10,7 @@ reach the outputs. The timing and execution of that in real-time is handled
 by the DSPE and the maker, implementor or advanced user can focus on the
 (possibly no) other tasks that should be handled.
 
-== Example - Dual VCA
+## Example - Dual VCA
 The following code is a Dual VCA configuration.
 ![Visual of Block model](docs/blocks-vca.svg)
 
