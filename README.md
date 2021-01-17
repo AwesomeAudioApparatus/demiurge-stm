@@ -47,6 +47,7 @@ fully assembled (without frontpanel, which can be ordered separately in
 case volume production is intended)
 
 # Continued Reading
+   * [Execution Model](docs/model.md)
    * [Installation](docs/installation.md)
    * [Usage](docs/usage.md)
    * [Blocks](docs/blocks.md)
