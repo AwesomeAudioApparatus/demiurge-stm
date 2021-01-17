@@ -12,6 +12,7 @@ by the DSPE and the maker, implementor or advanced user can focus on the
 
 ## Example - Dual VCA
 The following code is a Dual VCA configuration.
+
 ![Visual of Block model](docs/blocks-vca.svg)
 
 And to code that up, we need to declare each of the ***Inputs***, ***Outputs***, 
