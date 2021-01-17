@@ -45,7 +45,7 @@ void vco_setup() {
    // Set up the Oscillator to TRIANGLE wave form
    oscillator_configure_mode(&oscillator, TRIANGLE);
    oscillator_configure_frequency(&oscillator, &offset_freq.me);     // offset_freq block is controlling the frequency
-   oscillator_configure_attentuation(&oscillator, &pair3.me);        // pair3 block is controlling the amplitude
+   oscillator_configure_amplitude(&oscillator, &pair3.me);        // pair3 block is controlling the amplitude
 
    // Connect Oscillator to outputs
    audio_outport_configure_input(&out1, &oscillator.me);
